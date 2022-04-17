@@ -1,5 +1,6 @@
 
 from random import randint
+from re import S
 from turtle import speed, update
 import pygame
 import sys
@@ -102,6 +103,41 @@ class Cactus():
         global screen
         screen.blit(self.sprites[self.currSprite],self.rect)
 
+class Score():
+    def __init__(self) -> None:
+        self.score = 0
+        self.sheet = image_load("score.png")
+
+        self.Index = [
+            pygame.Rect(0,0,20,25),
+            pygame.Rect(18,0,20,25),
+            pygame.Rect(18*2+2,0,20,25),
+            pygame.Rect(18*3+4,0,20,25),
+            pygame.Rect(18*4+6,0,20,25),
+            pygame.Rect(18*5+8,0,20,25),
+            pygame.Rect(18*6+11,0,20,25),
+            pygame.Rect(18*7+12,0,20,25),
+            pygame.Rect(18*8+14,0,20,25),
+            pygame.Rect(18*9+16,0,20,25),
+        ]
+        
+    def inc(self):
+        self.score+=1
+    def clear(self):
+        self.score = 0
+    def draw(self):
+        global screen
+        sc = int(self.score/10)
+        arrIndex = list()
+
+        while(sc!=00):
+            arrIndex.insert(0,int(sc%10))
+            sc = int(sc/10)
+    
+        for i in range(len(arrIndex)):
+            screen.blit(self.sheet.subsurface(self.Index[arrIndex[i]]),pygame.Rect(600+i*24,0,20,25))
+
+
 
 def image_load(path,size = None):
     new_surface = pygame.image.load(path)
@@ -110,7 +146,7 @@ def image_load(path,size = None):
     return new_surface
 
 def setup():
-    global clouds,cactus
+    global clouds,cactus,tscore
     clouds = [Clouds("cloud.png",width,50),
         Clouds("cloud.png",width+100,150),
         Clouds("cloud.png",width+600,200),
@@ -124,8 +160,10 @@ def setup():
           Cactus(width+1600),
           Cactus(width+2300)]
 
+    tscore.clear()
+
 def update():
-    global Trex,clouds,cactus
+    global Trex,clouds,cactus,tscore
     Trex.update()
     
     for c in clouds:
@@ -133,8 +171,10 @@ def update():
     for c in cactus:
         c.update()
     
+    tscore.inc()
+    
 def draw():
-    global screen,Trex,cactus,clouds,gameOver,buttonGameOver
+    global screen,Trex,cactus,clouds,gameOver,buttonGameOver,tscore
     screen.fill((100,100,100))
     screen.fill((180,180,180),pygame.Rect(0,260,width,100))
 
@@ -145,6 +185,8 @@ def draw():
         c.draw()
     
     Trex.draw()
+
+    tscore.draw()
 
     if(Trex.isDead()):
         goImg = gameOverImg.get_rect()
@@ -167,7 +209,7 @@ Trex = Dino()
 clouds = None
 cactus = None
 
-
+tscore = Score()
 
 setup()
 
